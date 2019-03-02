@@ -1,0 +1,154 @@
+#include<stdio.h>
+#include<stdlib.h>
+#define EMPTY 0
+typedef struct node {
+	int data;
+	struct node*link;
+}List;
+List*get_node() {
+	List*tmp;
+	tmp = (List*)malloc(sizeof(List));
+	tmp->link = EMPTY;
+	return tmp;
+}
+void InsertNode(List**head, int data) {
+	if (*head == EMPTY) {
+		List*tmp;
+		tmp = *head;
+		*head = get_node();
+		(*head)->data = data;
+		(*head)->link = tmp;
+		return;
+	}
+	InsertNode(&(*head)->link, data);
+}
+List*SearchNode(List**head, int num) {
+	List*tmp = *head;
+	if (*head == NULL) {
+		return NULL;
+	}
+	else if ((*head)->data == num) {
+		return tmp;
+	}
+	else
+		return SearchNode(&(*head)->link, num);
+}
+void ChangeNode(List**head, int num, int change) {
+	List*tmp = SearchNode(&(*head), num);
+	if (tmp == NULL) {
+		printf("찾는 값이 없습니다\n");
+	}
+	else {
+		tmp->data = change;
+		printf("%d에서 %d로 수정되었습니다\n", num, change);
+	}
+}
+void DeleteNode(List**head, int delete) {
+	List*tmp = *head;
+	if (*head == NULL) {
+		printf("찾는 값이 없습니다\n");
+		return;
+	}
+	else if ((*head)->data == delete) {
+		(*head) = tmp->link;
+		free(tmp);
+		return;
+	}
+	DeleteNode(&(*head)->link, delete);
+}
+void PrintNode(List**head) {
+	List*tmp = *head;
+	if (tmp!= EMPTY) {
+		while (tmp) {
+			printf("%d\n", tmp->data);
+			tmp = tmp->link;
+		}
+	}
+	else {
+		printf("노드가 비어있습니다\n");
+	}
+}
+void AddNode(List**head, int num, int plus) {
+	List*tmp = (*head)->link;
+	if (*head == NULL) {
+		printf("찾는 값이 없습니다\n");
+		return;
+	}
+	else if ((*head)->data == num) {
+		(*head)->link = EMPTY;
+		InsertNode(&(*head), plus);
+		(*head)->link->link = tmp;
+		return;
+	}
+	AddNode(&(*head)->link, num, plus);
+}
+int main()
+{
+	List*head = EMPTY;
+	int delete, n, change;
+	int good,num,plus;
+
+	while (1) {
+		system("cls");
+		printf("Linked-list 프로그램입니다\n");
+		printf("1. 입력\n2. 출력\n3. 수정\n4. 삭제\n5. 삽입\n6. 찾기\n7. 종료\n");
+		printf(">>>>>> : ");
+		scanf("%d", &n);
+		if (n < 0 || n > 7)
+			continue;
+		switch (n) {
+		case 1:
+			printf("입력하고싶은 값을 입력하시오 :");
+			scanf("%d", &n);
+			InsertNode(&head, n);
+			system("pause");
+			continue;
+		case 2:
+			printf("값들을 출력합니다\n");
+			PrintNode(&head);
+			system("pause");
+			continue;
+		case 3:
+			printf("수정하고 싶은 값과 수정할 값을 입력하시오 :");
+			scanf("%d %d", &good, &change);
+			ChangeNode(&head, good, change);
+			system("pause");
+			continue;
+		case 4:
+			printf("삭제하실 값을 입력하시오 : ");
+			scanf("%d", &delete);
+			DeleteNode(&head, delete);
+			system("pause");
+			continue;
+		case 5:
+			printf("어떠한 수 뒤에 값을 삽입하시겠습니까?");
+			scanf("%d", &num);
+			if (SearchNode(&head, num) != NULL) {
+				printf("어떠한 수를 넣으시겠습니까?");
+				scanf("%d", &plus);
+				AddNode(&head, num, plus);
+			}
+			else
+			{
+				printf("찾으시는 값이 없습니다\n");
+			}
+			system("pause");
+			continue;
+		case 6:
+			printf("어떤 값을 찾으십니까?");
+			scanf("%d", &num);
+			if (SearchNode(&head, num) != NULL) {
+				printf("찾으시는 값이 있습니다\n");
+			}
+			else
+			{
+				printf("찾으시는 값이 없습니다\n");
+			}
+			system("pause");
+			continue;
+		case 7:
+			printf("종료\n");
+			return 0;
+		}
+	}
+}
